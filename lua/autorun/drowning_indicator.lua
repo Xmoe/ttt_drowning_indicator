@@ -31,10 +31,6 @@ if CLIENT then
 	-- TODO: maybe refactor using `#bubbles+1 * time_per_bubble` ?
 	local DELAY_BEFORE_TAKING_DAMAGE = -11		-- how long before the player actually takes damage after no bubbles are drawn.
 
-	----------------------Derived Variables--------------------
-	local BUBBLE_SIZE_X_PIXELS = BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR
-	local BUBBLE_SIZE_Y_PIXELS = BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR
-
 	------------------------Functions--------------------------
 	-- this function tracks the amount of air left
 	-- TODO: rework timestamp for drowning so it doesnt use nil?
@@ -61,10 +57,12 @@ if CLIENT then
 		surface.SetDrawColor( 255, 255, 255, 255 )	-- set color full color spectrum
 		surface.SetTexture(BUBBLE_TEXTURE)			-- set texture
 
+		bubble_size_pixels = BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR
+
 		for i=0, number_of_bubbles, 1 do
 			x_coordinate = X_POSITION_SCALED*ScrW() + i*BUBBLE_OFFSET_PIXELS
 			y_coordinate = Y_POSITION_SCALED*ScrH()
-			surface.DrawTexturedRect(x_coordinate, y_coordinate, BUBBLE_SIZE_X_PIXELS, BUBBLE_SIZE_Y_PIXELS)
+			surface.DrawTexturedRect(x_coordinate, y_coordinate, bubble_size_pixels, bubble_size_pixels)
 		end
 	end
 
