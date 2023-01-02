@@ -194,13 +194,13 @@ if CLIENT then
 			reset_button:SetText("Reset settings. This applies after rejoining the server.")
 			reset_button.DoClick = delete_options
 
-			settings_form:AddItem( debug_button )
-			settings_form:AddItem( x_pos_slider )
-			settings_form:AddItem( y_pos_slider )
-			settings_form:AddItem( bubble_size_slider )
-			settings_form:AddItem( bubble_distance_slider )
-			settings_form:AddItem( save_button )
-			settings_form:AddItem( reset_button )
+			settings_form:AddItem(debug_button)
+			settings_form:AddItem(x_pos_slider)
+			settings_form:AddItem(y_pos_slider)
+			settings_form:AddItem(bubble_size_slider)
+			settings_form:AddItem(bubble_distance_slider)
+			settings_form:AddItem(save_button)
+			settings_form:AddItem(reset_button)
 		end)
 	end
 
