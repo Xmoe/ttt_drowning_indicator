@@ -1,5 +1,6 @@
 AddCSLuaFile()
 
+-- https://steamcommunity.com/sharedfiles/filedetails/?id=481440358
 WORKSHOP_ID = "481440358"
 
 if SERVER then
@@ -91,7 +92,7 @@ if CLIENT then
 		end	
 		local temp_data = string.Implode(";", save_data)
 		file.Write(file_location, temp_data)
-		print("Saved drowning indicator settings!")
+		print("[Info|TTT Drowning Indicator] Saved drowning indicator settings.")
 	end
 
 	local function load_options()
@@ -164,7 +165,7 @@ if CLIENT then
 			settings_form:SetName("HUD Settings")
 
 			local debug_button = vgui.Create("DCheckBoxLabel")
-			debug_button:SetText("Enable preview rendering")
+			debug_button:SetText("Show preview")
 			debug_button:SetValue(button_enabled)
 			debug_button.OnChange = preview_toggle
 
@@ -214,7 +215,8 @@ if CLIENT then
 	hook.Add("InitPostEntity", "drowning_indicator_start", function()
 		if gmod.GetGamemode().ThisClass == "gamemode_terrortown" then
 			main()
-			print("[LOADED] TTT Drowning Indicator by Moe for the gmod-networks.net community.")
+			print("[Info|TTT Drowning Indicator] Made by Moe for the gmod-networks.net community :)")
+			print("[Info|TTT Drowning Indicator] Loaded successfully.")
 		end
 	end)
 
