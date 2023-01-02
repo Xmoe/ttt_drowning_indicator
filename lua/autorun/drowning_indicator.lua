@@ -73,7 +73,7 @@ if CLIENT then
 			simulate_drowning()
 			local percentage_air_left = get_air_level()
 
-			if percentage_air_left && percentage_air_left > 0 && not LocalPlayer():IsSpec() then	-- if underwater and not a spectator
+			if percentage_air_left and percentage_air_left > 0 and not LocalPlayer():IsSpec() then	-- if underwater and not a spectator
 				number_bubbles_to_draw = (percentage_air_left + DELAY_BEFORE_TAKING_DAMAGE) / MAX_NUMBER_OF_BUBBLES_TO_DRAW --setze die Anzahl der Blasen entsprechend der �brigen Luft
 				render_bubbles(number_bubbles_to_draw)
 			end
