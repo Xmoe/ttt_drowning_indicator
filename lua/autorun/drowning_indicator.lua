@@ -212,9 +212,9 @@ if CLIENT then
 	end
 
 	hook.Add( "InitPostEntity", "drowning_indicator_start", function()
-		if gmod.GetGamemode().Name == "Trouble in Terrorist Town" then
-			print("[LOADED] TTT Drowning Indicator by Moe for the gmod-networks.net community.")
+		if gmod.GetGamemode().ThisClass == "gamemode_terrortown" then
 			main()
+			print("[LOADED] TTT Drowning Indicator by Moe for the gmod-networks.net community.")
 		end
 	end)
 
