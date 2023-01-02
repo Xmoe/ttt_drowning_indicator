@@ -85,12 +85,12 @@ if CLIENT then
 	local file_location = "drowning_indicator/settings.txt"
 
 	local function save_options()
-		local save_data = {X_POSITION_SCALED,Y_POSITION_SCALED,SCALING_FACTOR,BUBBLE_DISTANCE_PIXELS}
+		local save_data = {X_POSITION_SCALED, Y_POSITION_SCALED, SCALING_FACTOR, BUBBLE_DISTANCE_PIXELS}
 		if not file.Exists(file_location, "DATA") then
 			file.CreateDir("drowning_indicator")
 		end	
-		local temp_data = string.Implode(";",save_data)
-		file.Write(file_location,temp_data)
+		local temp_data = string.Implode(";", save_data)
+		file.Write(file_location, temp_data)
 		print("Saved drowning indicator settings!")
 	end
 
@@ -133,23 +133,23 @@ if CLIENT then
 		end
 	end
 
-	local function create_slider(text,min,max,default,decimals,on_change)
+	local function create_slider(text, min, max, default, decimals, on_change)
 		local slider = vgui.Create( "DNumSlider" )
-		slider:SetText( text )
-		slider:SetMin( min )
-		slider:SetMax( max )
-		slider:SetValue( default )
-		slider:SetDecimals( decimals )
+		slider:SetText(text)
+		slider:SetMin(min)
+		slider:SetMax(max)
+		slider:SetValue(default)
+		slider:SetDecimals(decimals)
 		slider.OnValueChanged = on_change
 		return slider
 	end
 
 	local function add_settings_tab()
 		hook.Add("TTTSettingsTabs", "drowning_settings", function(dtabs)
-			local settings_panel = vgui.Create( "DPanel",dtabs )
-			settings_panel:StretchToParent(0,0,0,0)
+			local settings_panel = vgui.Create("DPanel", dtabs)
+			settings_panel:StretchToParent(0, 0, 0, 0)
 			settings_panel:SetPaintBackground(false)
-			dtabs:AddSheet( "Drowning Indicator", settings_panel, "bubble.vtf", false, false, "Adjust the position and size of the hud")
+			dtabs:AddSheet("Drowning Indicator", settings_panel, "bubble.vtf", false, false, "Adjust the position and size of the hud")
 
 			settings_panel:GetParent():GetParent().OnClose = function()
 				preview_disable()
@@ -158,30 +158,30 @@ if CLIENT then
 
 			--parent_frame = settings_panel:GetParent():GetParent()
 
-			local settings_form = vgui.Create( "DForm", settings_panel )
-			settings_form:StretchToParent(10,10,10,10)
-			settings_form:SetSpacing( 10 )
-			settings_form:SetName( "HUD Settings" )
+			local settings_form = vgui.Create("DForm", settings_panel)
+			settings_form:StretchToParent(10, 10, 10, 10)
+			settings_form:SetSpacing(10)
+			settings_form:SetName("HUD Settings")
 
-			local debug_button = vgui.Create( "DCheckBoxLabel" )
-			debug_button:SetText("Enable preview rendering?")
+			local debug_button = vgui.Create("DCheckBoxLabel")
+			debug_button:SetText("Enable preview rendering")
 			debug_button:SetValue(button_enabled)
 			debug_button.OnChange = preview_toggle
 
-			local x_pos_slider = create_slider("X Position",0,1,X_POSITION_SCALED,3,function(p,value)
+			local x_pos_slider = create_slider("X Position", 0, 1, X_POSITION_SCALED, 3, function(p, value)
 				X_POSITION_SCALED = value
 			end)
 
-			local y_pos_slider = create_slider("Y Postion",0,1,Y_POSITION_SCALED,3,function(p,value)
+			local y_pos_slider = create_slider("Y Postion", 0, 1, Y_POSITION_SCALED, 3, function(p, value)
 				Y_POSITION_SCALED = value
 			end)
 
-			local bubble_size_slider = create_slider("Texture Size",1,10,SCALING_FACTOR,0,function(p,value)
-				SCALING_FACTOR = math.floor(value) 
+			local bubble_size_slider = create_slider("Texture Size", 1, 10, SCALING_FACTOR, 0, function(p, value)
+				SCALING_FACTOR = math.floor(value)
 				BUBBLE_OFFSET_PIXELS = BUBBLE_DISTANCE_PIXELS + BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR
 			end)
 
-			local bubble_distance_slider = create_slider("Texture Offset",0,30,BUBBLE_DISTANCE_PIXELS,0,function(p,value)
+			local bubble_distance_slider = create_slider("Texture Offset", 0, 30, BUBBLE_DISTANCE_PIXELS, 0, function(p, value)
 				BUBBLE_DISTANCE_PIXELS = math.floor(value)
 				BUBBLE_OFFSET_PIXELS = BUBBLE_DISTANCE_PIXELS + BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR
 			end)
