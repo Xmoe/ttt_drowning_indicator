@@ -211,7 +211,7 @@ if CLIENT then
 		add_settings_tab()
 	end
 
-	hook.Add( "InitPostEntity", "drowning_indicator_start", function()
+	hook.Add("InitPostEntity", "drowning_indicator_start", function()
 		if gmod.GetGamemode().ThisClass == "gamemode_terrortown" then
 			main()
 			print("[LOADED] TTT Drowning Indicator by Moe for the gmod-networks.net community.")
