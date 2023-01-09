@@ -13,13 +13,14 @@ end
 if CLIENT then
 
 	-----------------------------Init--------------------------
+
 	local MAX_AIR_TIME_SECONDS = 8
-	local MAX_NUMBER_OF_BUBBLES_TO_DRAW = 10
+	local MAX_NUMBER_OF_BUBBLES_TO_DRAW = 9		-- chosen by experimentation: the timing and size of the bubbles both fit
 
 	local BUBBLE_DISTANCE_PIXELS = 4
 	local BUBBLE_TEXTURE_SIZE_PIXELS = 8		-- the texture is 8 by 8 pixels big
 	local SCALING_FACTOR = 3
-	local BUBBLE_OFFSET_PIXELS = BUBBLE_DISTANCE_PIXELS + BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR  --Eigentliches Offset f�r den ABstand zwischen den Blasen
+	local BUBBLE_OFFSET_PIXELS = BUBBLE_DISTANCE_PIXELS + BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR	-- offset between each bubble texture
 
 	-- (0,0) is the top left corner of the screen
 	-- the positions are hardcoded for a 1920x1080 screen and positioned over the basic HUD (garrysmod\gamemodes\terrortown\gamemode\cl_hud.lua)
@@ -28,58 +29,51 @@ if CLIENT then
 
 	local BUBBLE_TEXTURE = surface.GetTextureID("bubble")
 
-	-- TODO: maybe refactor using `#bubbles+1 * time_per_bubble` ?
-	local DELAY_BEFORE_TAKING_DAMAGE = -11		-- how long before the player actually takes damage after no bubbles are drawn.
-
 	------------------------Functions--------------------------
-	-- this function tracks the amount of air left
-	-- TODO: rework timestamp for drowning so it doesnt use nil?
-	local function simulate_drowning()
-	  if LocalPlayer():WaterLevel() == 3 then	-- if the player is underwater
-		if not timepoint_taking_damage then		-- if the var wasn't set yet
-			timepoint_taking_damage = CurTime() + MAX_AIR_TIME_SECONDS	-- calculate the timestamp when the player will start taking damage
-		end
-	  else
-			timepoint_taking_damage = nil		-- reset when the player leaves the water
-	  end
-	end
 
-	-- calculate percentage of air left
-	local function get_air_level()
-	  if timepoint_taking_damage then
-		return (timepoint_taking_damage - CurTime()) * (100/MAX_AIR_TIME_SECONDS)
-	  else
-		return nil
-	  end
-	end
-
-	local function render_bubbles(number_of_bubbles)
-		surface.SetDrawColor( 255, 255, 255, 255 )	-- set color full color spectrum
-		surface.SetTexture(BUBBLE_TEXTURE)			-- set texture
-
+	local function draw_bubbles(number_of_bubbles)
+		-- re-calculate every frame, in case the settings slider has been changed (TODO: instead fire a hook?)
 		bubble_size_pixels = BUBBLE_TEXTURE_SIZE_PIXELS*SCALING_FACTOR
 
-		for i=0, number_of_bubbles, 1 do
+		-- set full color spectrum
+		surface.SetDrawColor(255, 255, 255, 255)
+		surface.SetTexture(BUBBLE_TEXTURE)
+
+		for i=0, number_of_bubbles-1, 1 do
 			x_coordinate = X_POSITION_SCALED*ScrW() + i*BUBBLE_OFFSET_PIXELS
 			y_coordinate = Y_POSITION_SCALED*ScrH()
 			surface.DrawTexturedRect(x_coordinate, y_coordinate, bubble_size_pixels, bubble_size_pixels)
 		end
 	end
 
-	-- this function instantiates the HUD. Only call once!
-	local function draw_indicator()
-		hook.Add("HUDPaint", "drowning_indicator_main", function()	-- every frame, this code block is executed
-			simulate_drowning()
-			local percentage_air_left = get_air_level()
+	local function on_draw_ui()
+		is_player_diving = (LocalPlayer():WaterLevel() == 3)
+		is_player_spectator = LocalPlayer():IsSpec()
 
-			if percentage_air_left and percentage_air_left > 0 and not LocalPlayer():IsSpec() then	-- if underwater and not a spectator
-				number_bubbles_to_draw = (percentage_air_left + DELAY_BEFORE_TAKING_DAMAGE) / MAX_NUMBER_OF_BUBBLES_TO_DRAW --setze die Anzahl der Blasen entsprechend der �brigen Luft
-				render_bubbles(number_bubbles_to_draw)
+		if is_player_diving and not is_player_spectator then
+
+			-- this is only executed if the player was not diving the frame before
+			if not diving_timestamp then
+				diving_timestamp = CurTime()
 			end
-		end)
+
+			diving_time_seconds = CurTime() - diving_timestamp
+
+			-- percentage scaled up to number between 0 and 99
+			percentage_of_air = (MAX_AIR_TIME_SECONDS - diving_time_seconds) * 100 / MAX_AIR_TIME_SECONDS -1 -- subtract 1 to avoid rare cases of drawing one bubble to many for one frame
+
+			-- add 1 to MAX_NUMBER_OF_BUBBLES_TO_DRAW as a "fake" bubble to add a delay before taking damage after no more bubbles are being drawn
+			number_of_bubbles = math.floor(percentage_of_air / (MAX_NUMBER_OF_BUBBLES_TO_DRAW+1))
+
+			draw_bubbles(number_of_bubbles)
+		else
+			-- if the player is no longer diving, reset the timestamp and number_of_bubbles
+			diving_timestamp = nil
+			number_of_bubbles = 0
+		end
 	end
 
-	-----------------------Saving & Loading Settings------------------------
+	------------------Saving & Loading Settings----------------
 
 	local file_location = "drowning_indicator/settings.txt"
 
@@ -115,7 +109,7 @@ if CLIENT then
 
 	local function preview_enable()
 		hook.Add("HUDPaint", "drowning_indicator_preview", function()
-			render_bubbles(9)
+			draw_bubbles(MAX_NUMBER_OF_BUBBLES_TO_DRAW)
 		end)
 	end
 
@@ -144,7 +138,7 @@ if CLIENT then
 	end
 
 	local function add_settings_tab()
-		hook.Add("TTTSettingsTabs", "drowning_settings", function(dtabs)
+		hook.Add("TTTSettingsTabs", "drowning_indicator_settings", function(dtabs)
 			local settings_panel = vgui.Create("DPanel", dtabs)
 			settings_panel:StretchToParent(0, 0, 0, 0)
 			settings_panel:SetPaintBackground(false)
@@ -204,15 +198,18 @@ if CLIENT then
 	end
 
 	----------------------------------Main-----------------------------------
-	local function main()
-		load_options()
-		draw_indicator()
-		add_settings_tab()
-	end
+
+	-- console commands for testing: 
+	-- ttt_debug_preventwin 1; ttt_firstpreptime 0; ttt_preptime_seconds 0; ttt_posttime_seconds 0; ttt_minimum_players 1
 
 	hook.Add("InitPostEntity", "drowning_indicator_start", function()
 		if gmod.GetGamemode().ThisClass == "gamemode_terrortown" then
-			main()
+
+			load_options()
+			-- call the function to draw the indicator every frame when the ui is being drawn
+			hook.Add("HUDPaint", "drowning_indicator_draw_ui", on_draw_ui)
+			add_settings_tab()
+
 			print("[Info|TTT Drowning Indicator] Made by Moe for the gmod-networks.net community :)")
 			print("[Info|TTT Drowning Indicator] Loaded successfully.")
 		end
