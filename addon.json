@@ -1,0 +1,11 @@
+{
+	"title"		:	"Drowning Indicator for TTT",
+	"type"		:	"ServerContent",
+	"tags"		:	[ "fun", "water" ],
+	"ignore"	:
+	[
+        "README.md",
+        "thumbnail.jpg",
+        ".git/*"
+	]
+}
