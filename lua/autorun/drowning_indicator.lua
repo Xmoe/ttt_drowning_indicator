@@ -185,7 +185,6 @@ if CLIENT then
 			save_button.DoClick = save_settings
 
 			settings_panel:GetParent():GetParent().OnClose = function()
-				hook.Remove("HUDPaint", "drowning_indicator_preview")
 				show_preview(false)
 			end
 
