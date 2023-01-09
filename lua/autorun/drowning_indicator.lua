@@ -97,7 +97,6 @@ if CLIENT then
 		end	
 		local temp_data = string.Implode(";", save_data)
 		file.Write(file_location, temp_data)
-		print("[Info|TTT Drowning Indicator] Saved drowning indicator settings.")
 	end
 
 	local function load_settings()
@@ -113,24 +112,13 @@ if CLIENT then
 
 	--------------------------------Settings Tab-------------------------------
 
-	local button_enabled = false	-- because OnChange always returns true, regardless of the value. Stupid bug
-
-	local function preview_enable()
-		hook.Add("HUDPaint", "drowning_indicator_preview", function()
-			draw_bubbles(MAX_NUMBER_OF_BUBBLES_TO_DRAW)
-		end)
-	end
-
-	local function preview_disable()
-		hook.Remove("HUDPaint", "drowning_indicator_preview")
-	end
-
-	local function preview_toggle(_bool)
-		button_enabled = not button_enabled
-		if button_enabled then
-			preview_enable()
+	local function show_preview(_bool)
+		if _bool then
+			hook.Add("HUDPaint", "drowning_indicator_preview", function()
+				draw_bubbles(MAX_NUMBER_OF_BUBBLES_TO_DRAW)
+			end)
 		else
-			preview_disable()
+			hook.Remove("HUDPaint", "drowning_indicator_preview")
 		end
 	end
 
@@ -153,11 +141,6 @@ if CLIENT then
 			settings_panel:SetPaintBackground(false)
 			dtabs:AddSheet("Drowning Indicator", settings_panel, "bubble.vtf", false, false, "Adjust the position and size of the HUD")
 
-			settings_panel:GetParent():GetParent().OnClose = function()
-				preview_disable()
-				button_enabled = false
-			end
-
 			--parent_frame = settings_panel:GetParent():GetParent()
 
 			local settings_form = vgui.Create("DForm", settings_panel)
@@ -168,7 +151,9 @@ if CLIENT then
 			local debug_button = vgui.Create("DCheckBoxLabel")
 			debug_button:SetText("Show preview")
 			debug_button:SetValue(button_enabled)
-			debug_button.OnChange = preview_toggle
+			function debug_button:OnChange(button_is_checked) 
+				show_preview(button_is_checked)
+			end
 
 			local x_pos_slider = create_slider("X Position", 0, 1, x_position_factor, X_POSITION_SCALED_DEFAULT, 3, function(p, value)
 				x_position_factor = value
@@ -199,6 +184,11 @@ if CLIENT then
 			save_button:SetText("Save settings")
 			save_button.DoClick = save_settings
 
+			settings_panel:GetParent():GetParent().OnClose = function()
+				hook.Remove("HUDPaint", "drowning_indicator_preview")
+				show_preview(false)
+			end
+
 			settings_form:AddItem(debug_button)
 			settings_form:AddItem(x_pos_slider)
 			settings_form:AddItem(y_pos_slider)
@@ -218,9 +208,9 @@ if CLIENT then
 		if gmod.GetGamemode().ThisClass == "gamemode_terrortown" then
 
 			load_settings()
+			add_settings_tab()
 			-- call the function to draw the indicator every frame when the ui is being drawn
 			hook.Add("HUDPaint", "drowning_indicator_draw_ui", on_draw_ui)
-			add_settings_tab()
 
 			print("[Info|TTT Drowning Indicator] Made by Moe for the gmod-networks.net community :)")
 			print("[Info|TTT Drowning Indicator] Loaded successfully.")
