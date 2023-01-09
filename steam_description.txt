@@ -1,0 +1,6 @@
+Places a bubble indicator over your health bar when you start diving.
+Press F1 to change settings like size and position.
+
+You can install this addon on your server and every client will then load it as well.
+
+Made with love for gmod-networks.net. Besucht uns doch mal im Forum :)
