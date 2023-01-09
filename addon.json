@@ -6,6 +6,8 @@
 	[
         "README.md",
         "thumbnail.jpg",
-        ".git/*"
+        ".git/*",
+        ".gitignore",
+        "*.gma"
 	]
 }
