@@ -4,10 +4,10 @@
 	"tags"		:	[ "fun", "water" ],
 	"ignore"	:
 	[
-        "README.md",
         "thumbnail.jpg",
         ".git/*",
         ".gitignore",
-        "*.gma"
+        "*.gma",
+		"*.md"
 	]
 }
