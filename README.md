@@ -2,9 +2,12 @@
 
 # TTT Drowning Indicator
 
-![](https://img.shields.io/endpoint?url=https%3A%2F%2Fshieldsio-steam-workshop.jross.me%2F481440358%2Fsubscriptions-text)
+<a href="https://steamcommunity.com/sharedfiles/filedetails/?id=481440358">
+    <img src=https://img.shields.io/endpoint?url=https%3A%2F%2Fshieldsio-steam-workshop.jross.me%2F481440358%2Fsubscriptions-text height=25>
+</a>
 
-![](thumbnail.jpg)
+<img src="thumbnail.jpg" width=256>
+
 </div>
 
 
